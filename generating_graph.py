@@ -39,7 +39,7 @@ if __name__ == '__main__':
     N = 1024
 
     new_fig = plt.figure(
-        figsize=(N, N/2)
+        figsize=(600, 300)
     )
     new_ax = new_fig.add_subplot(111)
     # set all spines to invisible
@@ -143,7 +143,7 @@ if __name__ == '__main__':
             verticalalignment='center'
         )
         new_ax.text(
-            x=-2,
+            x=-5,
             y=i,
             s=str(i),
             color='k',
@@ -183,5 +183,5 @@ if __name__ == '__main__':
     # new_ax.invert_xaxis()
     # Show the plot
     plt.tight_layout()
-    plt.savefig('test.pdf', bbox_inches='tight', pad_inches=0.01)
+    plt.savefig('test.jpg', bbox_inches='tight', pad_inches=0.01)
     # plt.show()
