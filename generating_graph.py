@@ -34,7 +34,7 @@ def bitonic_sort_draw(N):
 if __name__ == '__main__':
 
     new_fig = plt.figure(
-        figsize=(16, 16)
+        figsize=(64, 32)
     )
     new_ax = new_fig.add_subplot(111)
     # set all spines to invisible
@@ -46,20 +46,91 @@ if __name__ == '__main__':
     new_ax.tick_params(labelcolor='w', top=False, bottom=False, left=False, right=False)
 
     # NUM_TO_SORT
-    N = 16
+    N = 128
+    # draw bitonic sort comparisons
+    bitonic_sort_draw(N)
 
+    i = 0
+    line_width = 1
+    arrow_width = 0.3
+    head_width = 2*line_width
+    color = 'darkorange'
+
+    move_distance = 3
+    inner_stage_distance = move_distance * N / 4
+    stage_distance = inner_stage_distance
+    base_drift = 5
+    stage_move = 0
+    for k in range(1, int(math.log(N, 2))+1):
+        inner_stage_move = 0
+        for j in range(k):
+            movement = 0
+            for z in range(int(N/2)):
+                compare = plot_dict[i]
+                regret = 2**(k - j - 1)
+                if compare[2] == 0:
+                    new_ax.arrow(
+                        x=movement*move_distance+inner_stage_move+stage_move+base_drift,
+                        y=compare[0],
+                        dx=0,
+                        dy=compare[1] - compare[0] - arrow_width,
+                        color=color,
+                        linewidth=line_width,
+                        shape='full',
+                        width=arrow_width,
+                        head_length=arrow_width,
+                        head_width=head_width
+                    )
+                    new_ax.scatter(
+                        x=movement*move_distance+inner_stage_move+stage_move+base_drift,
+                        y=compare[0],
+                        color=color,
+                        marker='o',
+                        s=200
+                    )
+                else:
+                    new_ax.arrow(
+                        x=movement*move_distance+inner_stage_move+stage_move+base_drift,
+                        y=compare[1],
+                        dx=0,
+                        dy=compare[0] - compare[1] + arrow_width,
+                        color=color,
+                        linewidth=line_width,
+                        shape='full',
+                        width=arrow_width,
+                        head_length=arrow_width,
+                        head_width=head_width
+                    )
+                    new_ax.scatter(
+                        x=movement*move_distance+inner_stage_move+stage_move+base_drift,
+                        y=compare[1],
+                        color=color,
+                        marker='o',
+                        s=200
+                    )
+                movement += 1
+                movement %= regret
+                i += 1
+                last_point = movement*move_distance+inner_stage_move+stage_move+base_drift
+            # inner_stage_move += 2**(k-j-1) * move_distance
+            inner_stage_move += (k - j - 1) * inner_stage_distance
+            # inner_stage_move += N/(2**((k-j))) * move_distance
+        stage_move += (2**(k-1)) * stage_distance
+
+
+    final_line = last_point + 10
     # create input-output lines
     for i in range(N):
         new_ax.hlines(
             y=i,
             xmin=0,
-            xmax=N**2,
+            xmax=final_line,
             color='k',
             linewidth=1,
             zorder=-1
         )
         new_ax.text(
-            x=N**2+0.2,
+            x=final_line+0.2,
             y=i,
             s=str(i),
             color='k',
@@ -72,54 +143,6 @@ if __name__ == '__main__':
             color='k',
             verticalalignment='center'
         )
-
-    # draw bitonic sort comparisons
-    bitonic_sort_draw(N)
-
-    i = 0
-    line_width = 1
-    arrow_width = 0.3
-    head_width = 2*line_width
-    color = 'darkorange'
-    stage_distance = 50
-    inner_stage_distance = 20
-    move_distance = 2
-    for k in range(1, int(math.log(N, 2))+1):
-        for j in range(k):
-            movement = 0
-            for z in range(int(N/2)):
-                compare = plot_dict[i]
-                regret = 2**(k - j - 1)
-                if compare[2] == 0:
-                    new_ax.arrow(
-                        x=movement*move_distance+stage_distance*k+inner_stage_distance*j,
-                        y=compare[0],
-                        dx=0,
-                        dy=compare[1] - compare[0] - arrow_width,
-                        color=color,
-                        linewidth=line_width,
-                        shape='full',
-                        width=arrow_width,
-                        head_length=arrow_width,
-                        head_width=head_width
-                    )
-                else:
-                    new_ax.arrow(
-                        x=movement*move_distance+stage_distance*k+inner_stage_distance*j,
-                        y=compare[1],
-                        dx=0,
-                        dy=compare[0] - compare[1] + arrow_width,
-                        color=color,
-                        linewidth=line_width,
-                        shape='full',
-                        width=arrow_width,
-                        head_length=arrow_width,
-                        head_width=head_width
-                    )
-                movement += 1
-                movement %= regret
-                i += 1
-
     # i = 0
     #
     # for compare in plot_dict:
@@ -154,5 +177,5 @@ if __name__ == '__main__':
     new_ax.invert_yaxis()
     # new_ax.invert_xaxis()
     # Show the plot
-    plt.savefig('test.pdf')
+    plt.savefig('test.png')
     plt.show()
